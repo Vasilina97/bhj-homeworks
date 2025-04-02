@@ -16,7 +16,24 @@ class Game {
     this.lossElement.textContent = 0;
   }
 
+
   registerEvents() {
+    const current = this;
+
+    function handleKeyPress(event) {
+        const expectedSymbol = current.currentSymbol.textContent.toLowerCase();
+        const pressedSymbol = event.key.toLowerCase();
+
+        if (pressedSymbol === expectedSymbol) {
+            current.success();
+        } else {
+            current.fail();
+        }
+    }
+
+    document.addEventListener('keydown', handleKeyPress);
+}
+
     /*
       TODO:
       Написать обработчик события, который откликается
@@ -25,7 +42,7 @@ class Game {
       При неправильном вводе символа - this.fail();
       DOM-элемент текущего символа находится в свойстве this.currentSymbol.
      */
-  }
+  
 
   success() {
     if(this.currentSymbol.classList.contains("symbol_current")) this.currentSymbol.classList.remove("symbol_current");
