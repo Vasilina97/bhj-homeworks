@@ -1,35 +1,48 @@
-let TabsArray = Array.from(document.querySelectorAll('div.tab'));
-let ContentsArray = Array.from(document.querySelectorAll('div.tab__content'));
-let newTab = 0;
-
-function setNewTab(keyCode) {
-    if (keyCode === 39) {
-        newTab === TabsArray.length - 1 ? newTab = 0 : ++newTab;
-    } else if (keyCode === 37) {
-        newTab === 0 ? newTab = TabsArray.length - 1 : --newTab;
+document.addEventListener('DOMContentLoaded', function() {
+    const tabsArray = Array.from(document.querySelectorAll('.tab'));
+    const contentsArray = Array.from(document.querySelectorAll('.tab__content'));
+    
+    function getActiveTabIndex() {
+        const activeTab = document.querySelector('.tab_active');
+        return tabsArray.indexOf(activeTab);
     }
-};
-
-function activateTabAndContent(newTab) {
-    // Deactivate current tab and content
-    document.querySelector('div.tab_active').classList.remove('tab_active');
-    document.querySelector('div.tab__content_active').classList.remove('tab__content_active');
-
-    // New tab and content activate
-    TabsArray[newTab].classList.add('tab_active');
-    ContentsArray[newTab].classList.add('tab__content_active');
-};
-
-// Click event
-TabsArray.forEach(function (item) {
-    item.addEventListener('click', function () {
-        newTab = TabsArray.indexOf(item);
-        activateTabAndContent(newTab);
+    
+    function setNewTab(key) {
+        const currentIndex = getActiveTabIndex();
+        let newIndex = currentIndex;
+        
+        if (key === 'ArrowRight') {
+            newIndex = (currentIndex + 1) % tabsArray.length;
+        } else if (key === 'ArrowLeft') {
+            newIndex = (currentIndex - 1 + tabsArray.length) % tabsArray.length;
+        }
+        
+        return newIndex;
+    }
+    
+    function activateTabAndContent(index) {
+        document.querySelector('.tab_active')?.classList.remove('tab_active');
+        document.querySelector('.tab__content_active')?.classList.remove('tab__content_active');
+        
+        tabsArray[index]?.classList.add('tab_active');
+        contentsArray[index]?.classList.add('tab__content_active');
+    }
+    
+    tabsArray.forEach(function(item) {
+        item.addEventListener('click', function() {
+            const tabIndex = tabsArray.indexOf(item);
+            activateTabAndContent(tabIndex);
+        });
     });
-});
-
-// Keyboard event
-addEventListener('keydown', event => {
-    setNewTab(keyCode);
-    activateTabAndContent(newTab);
+    
+    document.addEventListener('keydown', event => {
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+            const newIndex = setNewTab(event.key);
+            activateTabAndContent(newIndex);
+        }
+    });
+    
+    if (!document.querySelector('.tab_active') && tabsArray.length > 0) {
+        activateTabAndContent(0);
+    }
 });
